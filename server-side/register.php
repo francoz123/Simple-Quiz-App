@@ -13,7 +13,11 @@ $responses = [
 ];
 
 /**
- * 
+ * Function to send json error object to a user
+ *
+ * @param [int] $code - HTTP error code
+ * @param [string] $message - error message
+ * @return void
  */
 function send_error ($code, $message){
     global $responses;
@@ -22,51 +26,61 @@ function send_error ($code, $message){
     print(json_encode($error));
 }
 
-$time = date("h:i:s");
-$date = date("Y-m-d");
-
+// Add dependencies
 require_once "./class/Database.php";
 require_once "./class/Validator.php";
 
-/* $name = $_POST["name"];
-$age = $_POST["age"];
-$email = $_POST["email"];
-$phone = $_POST["phone"]; */
-//print(count($_POST));
+// Verify that request type is POST. If not, return error
 if ($_SERVER["REQUEST_METHOD"] !== "POST"){
     send_error(400, "Only POST requests allowed.");
     die();
-}elseif(!isset($_POST)) {
-    send_error(400, "No data provided. Request body cannot be empty.");
+}elseif(!isset($_POST)) { // If no data sent through
+    send_error(400, "No data provided. Request body cannot be empty. Please fill out all fields");
     die();
-}else {
+}else { // If fields are missing
     $fields = ["username", "fullName", "dateOfBirth", "email"];
     foreach ($fields as $value) {
         if (!isset($_POST[$value])){
-            send_error(400, "Incomplete POST body. All fields must be provided.");
+            send_error(400, "Some fields missing. All fields must be provided.");
             die();
         }
     }
 }
-   
+
+// Regex to validate name
 $name_regex = "/^[a-zA-Z-']+\s+[a-zA-Z-']+$/";
+// Regex to validate username
 $username_regex_array = ["/[A-Z]/", "/[0-9]/", "/[~!@#$%\^&?*]/"];
+// Regex to validate date
 $date_regex = "/^(3[0-1]|[0-2][1-9])\/(0[1-9]|1[0-2])\/(1[0-9][0-9][0-9]|20[0-2][0-2])$/";
 
+// Instantiate a validator object
 $validator = new Validator();
-
+// Validate fields
 $validator->validateUsername("username", $username_regex_array);
 $validator->validateName("fullName", $name_regex);
 $validator->validateDOB("dateOfBirth", $date_regex);
 $validator->validateEmail("email");
 
+// Retrieve year from date of birth
+$yearOfbirth = explode ("/", $_POST["dateOfBirth"])[2];
+//check if leap year
+if ((int) $yearOfbirth % 4 == 0) {
+    $date_regex = "/^(3[0-1]|[0-2][1-9])\/(0[1-9]|1[0-2])\/(1[0-9][0-9][0-9]|20[0-2][0-2])$/";
+}
+// Return timestamp from date of birth
 $date_array = date_parse_from_format ("d/m/Y", $_POST["dateOfBirth"]);
+// Get current timestamp
 $age = time() - mktime (0, 0, 0, $date_array['month'], $date_array['day'], $date_array['year']);
+// Convert timestamp to years and floor
 $age = $age / (60*60*24*365);
 $age = (int) $age;
+// Instantiate Database object and call the add user method to add user to database
 $db = new Database($_POST["username"], $_POST["fullName"], $_POST["dateOfBirth"], $_POST["email"]);
 $db->addUser('users.txt', 'a'); 
+// Shuffle username and append age
 $password = [ 'password' => str_shuffle ($_POST['username']) . $age ];
+// Send password to user
 print(json_encode($password));
 
 
