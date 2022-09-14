@@ -53,7 +53,12 @@ $name_regex = "/^[a-zA-Z-']+\s+[a-zA-Z-']+$/";
 $username_regex_array = ["/[A-Z]/", "/[0-9]/", "/[~!@#$%\^&?*]/"];
 // Regex to validate date
 $date_regex = "/^((3[0-1]|[0-2][0-9])\/(0[13578]|1[02])|(30|[0-2][0-9])\/(0[469]|11)|(([0-1][0-9]|2[0-8])\/02))\/(1[0-9][0-9][0-9]|20[0-2][0-2])$/";
-
+// Retrieve year from date of birth
+$yearOfbirth = explode ("/", $_POST["dateOfBirth"])[2];
+//check if leap year
+if (intval ($yearOfbirth) % 4 == 0) {
+    $date_regex = "/^((3[0-1]|[0-2][0-9])\/(0[13578]|1[02])|(30|[0-2][0-9])\/(0[469]|11)|([0-2][0-9]\/02))\/(1[0-9][0-9][0-9]|20[0-2][0-2])$/";
+}
 // Instantiate a validator object
 $validator = new Validator();
 // Validate fields
@@ -62,12 +67,7 @@ $validator->validateName("fullName", $name_regex);
 $validator->validateDOB("dateOfBirth", $date_regex);
 $validator->validateEmail("email");
 
-// Retrieve year from date of birth
-$yearOfbirth = explode ("\/", $_POST["dateOfBirth"])[2];
-//check if leap year
-if ((int) $yearOfbirth % 4 == 0) {
-    $date_regex = "/^((3[0-1]|[0-2][0-9])\/(0[13578]|1[02])|(30|[0-2][0-9])\/(0[469]|11)|([0-2][0-9]\/02))\/(1[0-9][0-9][0-9]|20[0-2][0-2])$/";
-}
+
 // Return timestamp from date of birth
 $date_array = date_parse_from_format ("d/m/Y", $_POST["dateOfBirth"]);
 // Get current timestamp
