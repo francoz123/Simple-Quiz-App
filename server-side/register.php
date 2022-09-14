@@ -2,7 +2,7 @@
 ini_set('display_errors', TRUE);
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
-
+// Set time zone
 date_default_timezone_set("Australia/Sydney");
 
 $responses = [
@@ -12,7 +12,9 @@ $responses = [
     500 => "Internal server error"
 ];
 
-$protocol = $_SERVER["SERVER_PROTOCOL"];
+/**
+ * 
+ */
 function send_error ($code, $message){
     global $responses;
     header($_SERVER['SERVER_PROTOCOL'] . ' '. $code . ' - ' . $responses[$code] . ': '. $message);
@@ -49,7 +51,7 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST"){
    
 $name_regex = "/^[a-zA-Z-']+\s+[a-zA-Z-']+$/";
 $username_regex_array = ["/[A-Z]/", "/[0-9]/", "/[~!@#$%\^&?*]/"];
-$date_regex = "/^(3[0-1]|[0-2][1-9])[-\/](0[1-9]|1[0-2])[\/-](1[0-9][0-9][0-9]|20[0-2][0-2])$/";
+$date_regex = "/^(3[0-1]|[0-2][1-9])\/(0[1-9]|1[0-2])\/(1[0-9][0-9][0-9]|20[0-2][0-2])$/";
 
 $validator = new Validator();
 
@@ -66,7 +68,6 @@ $db = new Database($_POST["username"], $_POST["fullName"], $_POST["dateOfBirth"]
 $db->addUser('users.txt', 'a'); 
 $password = [ 'password' => str_shuffle ($_POST['username']) . $age ];
 print(json_encode($password));
-
 
 
 
