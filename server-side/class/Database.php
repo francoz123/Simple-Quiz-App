@@ -1,39 +1,59 @@
 <?php
+/**
+ * Class to add user to database.
+ * Can be used to:
+ * 1. prepare user data to be encoded into json object
+ * 2. Add a user to database
+ */
 class Database implements jsonserializable {
     private $username;
-    private $name;
-    private $dob;
+    private $fullName;
+    private $dateOfBirth;
     private $email;
     
-    public function __construct($username, $name, $dob, $email) {
+    /**
+     * Constructor to initialise all fields
+     *
+     * @param [string] $username
+     * @param [string] $fullName
+     * @param [string] $dateOfBirth
+     * @param [string] $email
+     */
+    public function __construct($username, $fullName, $dateOfBirth, $email) {
         $this->username = $username;
-        $this->name = $name;
-        $this->dob = $dob;
+        $this->fullName = $fullName;
+        $this->dateOfBirth = $dateOfBirth;
         $this->email = $email;
     }
   
-    public function addUser($file_name, $action)    {
+    /**
+     * Adds user to database
+     *
+     * @param [string] $file_name - name of file to write to
+     * @param [string] $action - file action: r, w etc
+     * @return void
+     */
+    public function addUser($file_name, $action) {
+        // Open file for appending
         $file = fopen ($file_name, $action);
-        $st = json_encode($this->jsonserialize());
-        $st = $st . "\n";
+        // Write user json object to database
         fwrite ($file, json_encode($this->jsonserialize())."\n");
-        //fwrite ($file, $st);
-        //fwrite ($file, );
+        // Close file
         fclose ($file);
     }
 
+    /**
+     * Returns this objects fields in json format
+     *
+     * @return void
+     */
     public function jsonserialize(){
         return [
             'username' => $this->username,
-            'name' => $this->name,
-            'dob' => $this->dob,
+            'fullName' => $this->fullName,
+            'dateOfBirth' => $this->dateOfBirth,
             'email' => $this->email
         ];
     }
 }
-/* 
-$db = new Database("user1", "francis o", "12/12/1980", "ogdshd@mail.com");
 
-print_r(json_encode($db->jsonserialize()));
-?>
- */
