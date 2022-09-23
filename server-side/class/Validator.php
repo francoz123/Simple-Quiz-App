@@ -14,7 +14,7 @@ class Validator {
      * @return void
      */
     public function validateUsername($username, $regex_array){
-        if (!isset($_POST[$username]) || strlen($_POST[$username]) == 0){
+        if (strlen(trim($_POST[$username])) == 0){
             send_error(400, "Username is required");
             die();
         }else{

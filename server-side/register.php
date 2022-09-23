@@ -1,5 +1,5 @@
 <?php
-ini_set('display_errors', TRUE);
+//ini_set('display_errors', TRUE);
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
 // Set time zone
@@ -26,12 +26,9 @@ function send_error ($code, $message){
     print(json_encode($error));
 }
 
-// Add dependencies
-require_once "./class/Database.php";
-require_once "./class/Validator.php";
 
 // Verify that request type is POST. If not, return error
-if ($_SERVER["REQUEST_METHOD"] !== "POST"){
+if ($_SERVER["REQUEST_METHOD"] != "POST"){
     send_error(400, "Only POST requests allowed.");
     die();
 }elseif(!isset($_POST)) { // If no data sent through
@@ -40,12 +37,16 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST"){
 }else { // If fields are missing
     $fields = ["username", "fullName", "dateOfBirth", "email"];
     foreach ($fields as $value) {
-        if (!isset($_POST[$value])){
-            send_error(400, "Some fields missing. All fields must be provided.");
+        if (!isset($_POST[$value]) || strlen(trim($_POST[$value])) == 0){
+            send_error(400, "Some fields are missing. All fields must be provided.");
             die();
         }
     }
 }
+
+// Add dependencies
+require_once "./class/Validator.php";
+require_once "./class/Database.php";
 
 // Regex to validate name
 $name_regex = "/^[a-zA-Z-']+\s+[a-zA-Z-']+$/";
@@ -54,11 +55,12 @@ $username_regex_array = ["/[A-Z]/", "/[0-9]/", "/[~!@#$%\^&?*]/"];
 // Regex to validate date
 $date_regex = "/^((3[0-1]|[0-2][0-9])\/(0[13578]|1[02])|(30|[0-2][0-9])\/(0[469]|11)|(([0-1][0-9]|2[0-8])\/02))\/(1[0-9][0-9][0-9]|20[0-2][0-2])$/";
 // Retrieve year from date of birth
-$yearOfbirth = explode ("/", $_POST["dateOfBirth"])[2];
+$yearOfbirth = explode ("/", $_POST["dateOfBirth"]);
 //check if leap year
-if (intval ($yearOfbirth) % 4 == 0) {
+if (count($yearOfbirth) == 2 && is_numeric($yearOfbirth[2]) && intval ($yearOfbirth[2]) % 4 == 0){
     $date_regex = "/^((3[0-1]|[0-2][0-9])\/(0[13578]|1[02])|(30|[0-2][0-9])\/(0[469]|11)|([0-2][0-9]\/02))\/(1[0-9][0-9][0-9]|20[0-2][0-2])$/";
 }
+
 // Instantiate a validator object
 $validator = new Validator();
 // Validate fields
@@ -66,7 +68,6 @@ $validator->validateUsername("username", $username_regex_array);
 $validator->validateName("fullName", $name_regex);
 $validator->validateDOB("dateOfBirth", $date_regex);
 $validator->validateEmail("email");
-
 
 // Return timestamp from date of birth
 $date_array = date_parse_from_format ("d/m/Y", $_POST["dateOfBirth"]);
@@ -82,11 +83,3 @@ $db->addUser('users.txt', 'a');
 $password = [ 'password' => str_shuffle ($_POST['username']) . $age ];
 // Send password to user
 print(json_encode($password));
-
-
-
-
-
-
-
-

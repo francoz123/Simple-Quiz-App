@@ -3,3 +3,7 @@
 {"username":"francoz123@yahomQ2","fullName":"francis ozoka","dateOfBirth":"28\/02\/1993","email":"email@email.com"}
 {"username":"francoz123@yahomQ2","fullName":"francis ozoka","dateOfBirth":"28\/02\/2000","email":"email@email.com"}
 {"username":"francoz123@yah5E","fullName":"francis ozoka","dateOfBirth":"29\/02\/1996","email":"francoz123@gmail.com"}
+{"username":"francoz123@yaA$","fullName":"francis ozoka","dateOfBirth":"12\/11\/1996","email":"francoz123@gmail.com"}
+{"username":"francoz123@y$Acom","fullName":"francis ozoka","dateOfBirth":"12\/11\/1996","email":"email@email.com"}
+{"username":"ahggghh%$A32","fullName":"francis ozoka","dateOfBirth":"12\/11\/1996","email":"francoz123@gmail.com"}
+{"username":"48bp$Dgff","fullName":"francis ozoka","dateOfBirth":"12\/11\/1996","email":"email@email.com"}
